@@ -10,14 +10,13 @@
 
   <div class="container">
 
-    <!-- Imagen en lugar del título -->
+    <!-- Imagen como título -->
     <div class="title">
       <img src="logo.png" alt="Automatización" class="title-image">
     </div>
 
-    <button id="accionBtn" onclick="enviar()">Enviar señal</button>
+    <button id="accionBtn">Enviar señal</button>
 
-    <!-- Leyenda inferior -->
     <div id="status" class="status">
       automatización en proceso
     </div>
@@ -25,53 +24,56 @@
   </div>
 
   <script>
-    const BLOQUEO_MINUTOS = 10;
-    const STORAGE_KEY = "boton_bloqueado_hasta";
-    const btn = document.getElementById("accionBtn");
-    const status = document.getElementById("status");
+    document.addEventListener("DOMContentLoaded", () => {
 
-    function bloquearBoton() {
-      btn.disabled = true;
-      btn.classList.add("disabled");
-      status.classList.add("visible");
-    }
+      const BLOQUEO_MINUTOS = 10;
+      const STORAGE_KEY = "boton_bloqueado_hasta";
 
-    function desbloquearBoton() {
-      btn.disabled = false;
-      btn.classList.remove("disabled");
-      status.classList.remove("visible");
-      localStorage.removeItem(STORAGE_KEY);
-    }
+      const btn = document.getElementById("accionBtn");
+      const status = document.getElementById("status");
 
-    function verificarBloqueo() {
-      const bloqueadoHasta = localStorage.getItem(STORAGE_KEY);
-      if (!bloqueadoHasta) return;
-
-      const ahora = Date.now();
-      if (ahora < bloqueadoHasta) {
-        bloquearBoton();
-      } else {
-        desbloquearBoton();
+      function aplicarBloqueo() {
+        btn.disabled = true;
+        btn.classList.add("disabled");
+        status.classList.add("visible");
       }
-    }
 
-    function enviar() {
-      const ahora = Date.now();
-      const bloqueoHasta = ahora + BLOQUEO_MINUTOS * 60 * 1000;
+      function removerBloqueo() {
+        btn.disabled = false;
+        btn.classList.remove("disabled");
+        status.classList.remove("visible");
+        localStorage.removeItem(STORAGE_KEY);
+      }
 
-      localStorage.setItem(STORAGE_KEY, bloqueoHasta);
+      function verificarEstado() {
+        const bloqueadoHasta = localStorage.getItem(STORAGE_KEY);
+        if (!bloqueadoHasta) return;
 
-      bloquearBoton();
+        if (Date.now() < Number(bloqueadoHasta)) {
+          aplicarBloqueo();
+        } else {
+          removerBloqueo();
+        }
+      }
 
-      fetch("https://genetica10.app.n8n.cloud/webhook/mA5t3r-p1aMau7o-2026", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ accion: "boton_presionado" })
+      btn.addEventListener("click", () => {
+        if (btn.disabled) return;
+
+        const bloqueoHasta = Date.now() + BLOQUEO_MINUTOS * 60 * 1000;
+        localStorage.setItem(STORAGE_KEY, bloqueoHasta);
+
+        aplicarBloqueo();
+
+        fetch("https://genetica10.app.n8n.cloud/webhook/mA5t3r-p1aMau7o-2026", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ accion: "boton_presionado" })
+        });
       });
-    }
 
-    // Verificar estado al cargar / refrescar
-    verificarBloqueo();
+      // Verificar bloqueo al cargar / refrescar
+      verificarEstado();
+    });
   </script>
 
 </body>
