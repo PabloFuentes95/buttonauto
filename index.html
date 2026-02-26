@@ -9,33 +9,70 @@
 <body>
 
   <div class="container">
-    <div class="title">Ejecutar acción automática</div>
 
-    <button onclick="enviar()">Enviar señal</button>
+    <!-- Imagen en lugar del título -->
+    <div class="title">
+      <img src="logo.png" alt="Automatización" class="title-image">
+    </div>
 
-    <div id="status" class="status">Señal enviada correctamente</div>
+    <button id="accionBtn" onclick="enviar()">Enviar señal</button>
+
+    <!-- Leyenda inferior -->
+    <div id="status" class="status">
+      automatización en proceso
+    </div>
+
   </div>
 
   <script>
+    const BLOQUEO_MINUTOS = 10;
+    const STORAGE_KEY = "boton_bloqueado_hasta";
+    const btn = document.getElementById("accionBtn");
+    const status = document.getElementById("status");
+
+    function bloquearBoton() {
+      btn.disabled = true;
+      btn.classList.add("disabled");
+      status.classList.add("visible");
+    }
+
+    function desbloquearBoton() {
+      btn.disabled = false;
+      btn.classList.remove("disabled");
+      status.classList.remove("visible");
+      localStorage.removeItem(STORAGE_KEY);
+    }
+
+    function verificarBloqueo() {
+      const bloqueadoHasta = localStorage.getItem(STORAGE_KEY);
+      if (!bloqueadoHasta) return;
+
+      const ahora = Date.now();
+      if (ahora < bloqueadoHasta) {
+        bloquearBoton();
+      } else {
+        desbloquearBoton();
+      }
+    }
+
     function enviar() {
+      const ahora = Date.now();
+      const bloqueoHasta = ahora + BLOQUEO_MINUTOS * 60 * 1000;
+
+      localStorage.setItem(STORAGE_KEY, bloqueoHasta);
+
+      bloquearBoton();
+
       fetch("https://genetica10.app.n8n.cloud/webhook/mA5t3r-p1aMau7o-2026", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ accion: "boton_presionado" })
       });
-
-      const status = document.getElementById("status");
-      status.classList.add("visible");
-
-      setTimeout(() => {
-        status.classList.remove("visible");
-      }, 3000);
     }
+
+    // Verificar estado al cargar / refrescar
+    verificarBloqueo();
   </script>
 
 </body>
 </html>
-
-
-
-
