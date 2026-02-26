@@ -1,118 +1,88 @@
-    :root {
-      --ms-blue: #0078d4;
-      --ms-blue-dark: #005a9e;
-      --ms-bg: #f3f6fb;
-      --ms-text: #1b1b1b;
-    }
+:root {
+  --ms-blue: #0078d4;
+  --ms-blue-dark: #005a9e;
+  --ms-bg: #f3f6fb;
+  --ms-text: #1b1b1b;
+  --ms-disabled: #bfc3c9;
+}
 
-    * {
-      box-sizing: border-box;
-      font-family: "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-    }
+/* Reset base */
+* {
+  box-sizing: border-box;
+  font-family: "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+}
 
-    body {
-      margin: 0;
-      height: 100vh;
-      background: linear-gradient(135deg, #f3f6fb, #ffffff);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: var(--ms-text);
-    }
+/* Layout general */
+body {
+  margin: 0;
+  height: 100vh;
+  background: linear-gradient(135deg, var(--ms-bg), #ffffff);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--ms-text);
+}
 
-    .container {
-      text-align: center;
-    }
-
-    .title {
-      font-size: 1.4rem;
-      font-weight: 500;
-      margin-bottom: 30px;
-      color: #4a4a4a;
-    }
-
-    button {
-      background: linear-gradient(135deg, var(--ms-blue), var(--ms-blue-dark));
-      color: #fff;
-      border: none;
-      border-radius: 14px;
-      padding: 28px 64px;
-      font-size: 1.4rem;
-      font-weight: 600;
-      cursor: pointer;
-      box-shadow:
-        0 10px 25px rgba(0, 120, 212, 0.35),
-        0 0 0 0 rgba(0, 120, 212, 0.4);
-      transition: transform 0.2s ease, box-shadow 0.2s ease;
-    }
-
-    button:hover {
-      transform: translateY(-2px);
-      box-shadow:
-        0 14px 32px rgba(0, 120, 212, 0.45),
-        0 0 0 0 rgba(0, 120, 212, 0.4);
-    }
-
-    button:active {
-      transform: scale(0.98);
-    }
-
-    .status {
-      margin-top: 25px;
-      font-size: 0.95rem;
-      color: #0078d4;
-      opacity: 0;
-      transition: opacity 0.3s ease;
-    }
-
-    .status.visible {
-      opacity: 1;
-    }
-
+/* Contenedor principal */
 .container {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  height: 100vh;
   gap: 25px;
+  text-align: center;
+  height: 100vh;
 }
 
+/* Imagen de título */
 .title-image {
   max-width: 220px;
 }
 
+/* Botón principal */
 button {
-  padding: 26px 60px;
+  background: linear-gradient(135deg, var(--ms-blue), var(--ms-blue-dark));
+  color: #ffffff;
+  border: none;
+  border-radius: 14px;
+  padding: 28px 64px;
   font-size: 1.4rem;
   font-weight: 600;
-  border-radius: 14px;
-  border: none;
   cursor: pointer;
-  background: linear-gradient(135deg, #0078d4, #005a9e);
-  color: white;
-  transition: all 0.2s ease;
+  box-shadow: 0 10px 25px rgba(0, 120, 212, 0.35);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
 }
 
-button:hover:not(.disabled) {
+/* Hover solo si está activo */
+button:hover:not(.disabled):not(:disabled) {
   transform: translateY(-2px);
+  box-shadow: 0 14px 32px rgba(0, 120, 212, 0.45);
 }
 
+/* Click */
+button:active:not(.disabled):not(:disabled) {
+  transform: scale(0.98);
+}
+
+/* Estado bloqueado */
 button.disabled,
 button:disabled {
-  background: #bfc3c9;
+  background: var(--ms-disabled);
+  color: #6b6f75;
   cursor: not-allowed;
   box-shadow: none;
   transform: none;
 }
 
+/* Texto de estado */
 .status {
   font-size: 0.95rem;
-  color: #0078d4;
+  color: var(--ms-blue);
   opacity: 0;
   transition: opacity 0.3s ease;
 }
 
+/* Visible */
 .status.visible {
   opacity: 1;
 }
