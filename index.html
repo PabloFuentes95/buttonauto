@@ -1,15 +1,20 @@
-<button onclick="enviar()">Enviar</button>
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Botón Webhook</title>
+</head>
+<body>
+  <button onclick="enviar()">Enviar señal</button>
 
-<script>
-function enviar() {
-  fetch("https://genetica10.app.n8n.cloud/webhook/be526121-c283-4e21-af0a-e0d01767ca8b", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({
-      accion: "boton_presionado"
-    })
-  });
-}
-</script>
+  <script>
+    function enviar() {
+      fetch("https://genetica10.app.n8n.cloud/webhook/be526121-c283-4e21-af0a-e0d01767ca8b", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ accion: "boton_presionado" })
+      });
+    }
+  </script>
+</body>
+</html>
