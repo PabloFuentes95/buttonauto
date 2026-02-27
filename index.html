@@ -2,78 +2,60 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>Acción Automática</title>
+  <title>Automatización</title>
   <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
   <div class="container">
-
-    <!-- Imagen como título -->
-    <div class="title">
-      <img src="logo.png" alt="Automatización" class="title-image">
-    </div>
-
-    <button id="accionBtn">Enviar señal</button>
-
-    <div id="status" class="status">
-      automatización en proceso
-    </div>
-
+    <button id="accionBtn">Iniciar automatización</button>
   </div>
 
   <script>
-    document.addEventListener("DOMContentLoaded", () => {
+    // URLs de n8n
+    const INICIAR_URL = "https://genetica10.app.n8n.cloud/webhook/iniciar";
+    const ESTADO_URL  = "https://genetica10.app.n8n.cloud/webhook/estado";
 
-      const BLOQUEO_MINUTOS = 10;
-      const STORAGE_KEY = "boton_bloqueado_hasta";
+    const btn = document.getElementById("accionBtn");
+    let polling = null;
 
-      const btn = document.getElementById("accionBtn");
-      const status = document.getElementById("status");
+    btn.addEventListener("click", async () => {
+      btn.disabled = true;
 
-      function aplicarBloqueo() {
-        btn.disabled = true;
-        btn.classList.add("disabled");
-        status.classList.add("visible");
-      }
-
-      function removerBloqueo() {
-        btn.disabled = false;
-        btn.classList.remove("disabled");
-        status.classList.remove("visible");
-        localStorage.removeItem(STORAGE_KEY);
-      }
-
-      function verificarEstado() {
-        const bloqueadoHasta = localStorage.getItem(STORAGE_KEY);
-        if (!bloqueadoHasta) return;
-
-        if (Date.now() < Number(bloqueadoHasta)) {
-          aplicarBloqueo();
-        } else {
-          removerBloqueo();
-        }
-      }
-
-      btn.addEventListener("click", () => {
-        if (btn.disabled) return;
-
-        const bloqueoHasta = Date.now() + BLOQUEO_MINUTOS * 60 * 1000;
-        localStorage.setItem(STORAGE_KEY, bloqueoHasta);
-
-        aplicarBloqueo();
-
-        fetch("https://genetica10.app.n8n.cloud/webhook/mA5t3r-p1aMau7o-2026", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ accion: "boton_presionado" })
-        });
+      // 1️⃣ Inicia el flujo
+      await fetch(INICIAR_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ accion: "iniciar" })
       });
 
-      // Verificar bloqueo al cargar / refrescar
-      verificarEstado();
+      // 2️⃣ Empieza a consultar estado
+      polling = setInterval(consultarEstado, 5000);
     });
+
+    async function consultarEstado() {
+      const res = await fetch(ESTADO_URL);
+      const data = await res.json();
+
+      if (data.estado === "completado") {
+        clearInterval(polling);
+        mostrarModal(data.webUrl);
+      }
+    }
+
+    function mostrarModal(url) {
+      const overlay = document.createElement("div");
+      overlay.className = "overlay";
+      overlay.innerHTML = `
+        <div class="modal">
+          <h2>Automatización finalizada</h2>
+          <p>El master fue actualizado correctamente</p>
+          <a href="${url}" target="_blank">Abrir archivo</a>
+        </div>
+      `;
+      document.body.appendChild(overlay);
+    }
   </script>
 
 </body>
