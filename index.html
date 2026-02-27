@@ -9,28 +9,45 @@
 <body>
 
   <div class="container">
+
+    <!-- Imagen como título -->
+    <img src="logo.png" alt="Automatización" class="title-image">
+
+    <!-- Botón -->
     <button id="accionBtn">Iniciar automatización</button>
+
+    <!-- Texto de estado -->
+    <div id="status" class="status">
+      automatización en proceso
+    </div>
+
   </div>
 
   <script>
-    // URLs de n8n
     const INICIAR_URL = "https://genetica10.app.n8n.cloud/webhook/iniciar";
     const ESTADO_URL  = "https://genetica10.app.n8n.cloud/webhook/estado";
 
     const btn = document.getElementById("accionBtn");
+    const status = document.getElementById("status");
+
     let polling = null;
 
     btn.addEventListener("click", async () => {
-      btn.disabled = true;
+      if (btn.disabled) return;
 
-      // 1️⃣ Inicia el flujo
+      // UI: bloquear botón
+      btn.disabled = true;
+      btn.classList.add("disabled");
+      status.classList.add("visible");
+
+      // Iniciar automatización
       await fetch(INICIAR_URL, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ accion: "iniciar" })
       });
 
-      // 2️⃣ Empieza a consultar estado
+      // Consultar estado cada 5s
       polling = setInterval(consultarEstado, 5000);
     });
 
@@ -50,7 +67,7 @@
       overlay.innerHTML = `
         <div class="modal">
           <h2>Automatización finalizada</h2>
-          <p>El master fue actualizado correctamente</p>
+          <p>El master ha sido actualizado correctamente</p>
           <a href="${url}" target="_blank">Abrir archivo</a>
         </div>
       `;
